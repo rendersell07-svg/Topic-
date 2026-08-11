@@ -12,7 +12,7 @@ from vars import CREDIT, cookies_file_path, AUTH_USERS
 import globals
 
 def register_youtube_handlers(bot):
-#==============================================================================================================================
+# ==============================================================================================================================
     @bot.on_message(filters.command("cookies") & filters.private)
     async def cookies_handler(client: Client, m: Message):
         editable = await m.reply_text("**Please upload the YouTube Cookies file (.txt format).**")
@@ -32,7 +32,7 @@ def register_youtube_handlers(bot):
         except Exception as e:
             await m.reply_text(f"__**Failed Reason**__\n<blockquote>{str(e)}</blockquote>")
         
-#==============================================================================================================================
+# ==============================================================================================================================
     @bot.on_message(filters.command("getcookies") & filters.private)
     async def getcookies_handler(client: Client, m: Message):
         try:
@@ -40,7 +40,7 @@ def register_youtube_handlers(bot):
         except Exception as e:
             await m.reply_text(f"⚠️ An error occurred: {str(e)}")     
 
-#==========================================================================================================================================================================================
+# ==============================================================================================================================
     @bot.on_message(filters.command(["ytm"]))
     async def ytm_handler(bot: Client, m: Message):
         globals.processing_request = True
@@ -64,7 +64,7 @@ def register_youtube_handlers(bot):
                  os.remove(x)
                  return
 
-            await editable.edit(f"**•ᴛᴏᴛᴀʟ 🔗 ʟɪɴᴋs ғᴏᴜɴᴅ ᴀʀᴇ --__{len(links)}__--\n•sᴇɴᴅ ғʀᴏᴍ ᴡʜᴇʀᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ...")
+            await editable.edit(f"**•ᴛᴏᴛᴀʟ 🔗 ʟɪɴᴋs ғᴏᴜɴᴅ ᴀʀᴇ --__{len(links)}__--\n•sᴇɴᴅ ғʀᴏᴍ ᴡʜᴇʀᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ...**")
             try:
                 input0: Message = await bot.listen(editable.chat.id, timeout=20)
                 raw_text = input0.text
@@ -93,11 +93,13 @@ def register_youtube_handlers(bot):
                 links.append(i.split("://", 1))
             count = 1
             arg = 1
+            playlist_name = "Single or Multiple Links"
             await editable.delete()
             await input.delete(True)
         else:
             await m.reply_text("**Invalid input. Send either a .txt file or YouTube links set**")
             return
+
         try:
             for i in range(arg-1, len(links)):  # Iterate over each link
                 if globals.cancel_requested:
@@ -123,9 +125,20 @@ def register_youtube_handlers(bot):
                         await prog.delete(True)
                         print(f"File {name}.mp3 exists, attempting to send...")
                         try:
-                            await bot.send_document(chat_id=m.chat.id, document=f'{name}.mp3', caption=f'**🎵 Title : **[{str(count).zfill(3)}] - {name1}.mp3\n\n🔗**Video link** : {url}\n\n🌟** ✧𝐸𝓍𝓉𝓇𝒶𝒸𝓉𝑒𝒹 𝒷𝓎 : 𝒮𝒶𝒽𝒾𝓁 ✧')
+                            # ============ नया MP3 Caption ============
+                            mp3_caption = (
+                                f"Index: {count}\n\n"
+                                f"Title: {name1}.mp3\n\n"
+                                f"Batch: {playlist_name}\n\n"
+                                f"Extracted By: {CREDIT}"
+                            )
+                            await bot.send_document(
+                                chat_id=m.chat.id,
+                                document=f'{name}.mp3',
+                                caption=mp3_caption
+                            )
                             os.remove(f'{name}.mp3')
-                            count+=1
+                            count += 1
                         except Exception as e:
                             await m.reply_text(f'⚠️**Downloading Failed**⚠️\n**Name** =>> `{str(count).zfill(3)} {name1}`\n**Url** =>> {url}', disable_web_page_preview=True)
                             count+=1
@@ -139,7 +152,7 @@ def register_youtube_handlers(bot):
         finally:
             await m.reply_text("<blockquote><b>All YouTube Music Download Successfully</b></blockquote>")
  
-#========================================================================================================================================================================================================
+# ==============================================================================================================================
     @bot.on_message(filters.command(["y2t"]))
     async def y2t_handler(bot: Client, message: Message):
         user_id = str(message.from_user.id)
@@ -185,6 +198,12 @@ def register_youtube_handlers(bot):
         with open(txt_file, 'w') as f:
             f.write('\n'.join(videos))
 
-        await message.reply_document(document=txt_file, caption=f'<a href="{youtube_link}">__**Click Here to Open Link**__</a>\n<blockquote>{title}.txt</blockquote>\n')
+        # ============ नया .txt file caption ============
+        txt_caption = (
+            f"Index: 1\n\n"
+            f"Title: {title}.txt\n\n"
+            f"Batch: {title}\n\n"
+            f"Extracted By: {CREDIT}"
+        )
+        await message.reply_document(document=txt_file, caption=txt_caption)
         os.remove(txt_file)
-    
